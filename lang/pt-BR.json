@@ -1,0 +1,48 @@
+{
+  "CFT.Enabled.name": "Ativar câmera de acompanhamento",
+  "CFT.Enabled.hint": "Mantém sua câmera suavemente centralizada em seus tokens controlados. Atalho padrão: Alt+F (configurável em Atalhos) ou use o ícone de mira.",
+
+  "CFT.RetainZoom.name": "Manter nível de zoom",
+  "CFT.RetainZoom.hint": "Se ativado, o nível de zoom atual será preservado durante o acompanhamento.",
+
+  "CFT.Scale.name": "Zoom alvo (se não mantiver)",
+  "CFT.Scale.hint": "Usado apenas quando 'Manter nível de zoom' está desativado.",
+
+  "CFT.Responsiveness.name": "Responsividade (0.05–0.5)",
+  "CFT.Responsiveness.hint": "Define o quanto da distância restante a câmera se move a cada quadro. 0.5 = mais rápido; 0.1 = mais suave.",
+
+  "CFT.MaxSpeed.name": "Velocidade máxima (px/s)",
+  "CFT.MaxSpeed.hint": "Limite opcional de velocidade de movimento da câmera. 0 = sem limite.",
+
+  "CFT.IdleMs.name": "Tempo de inatividade (ms)",
+  "CFT.IdleMs.hint": "Tempo de espera após os tokens pararem de se mover antes da câmera ser considerada inativa.",
+
+  "CFT.ResumeOnRelease.name": "Retomar após soltar o mouse",
+  "CFT.ResumeOnRelease.hint": "Quando ativado, ao soltar o mouse após um pan em inatividade, a câmera se recentraliza nos tokens controlados e retoma o acompanhamento.",
+
+  "CFT.Toggle.name": "Alternar câmera de acompanhamento",
+  "CFT.Toggle.on": "Câmera de acompanhamento ativada",
+  "CFT.Toggle.off": "Câmera de acompanhamento desativada",
+
+  "CFT.Force.name": "Forçar acompanhamento (somente Mestre)",
+  "CFT.Force.hint": "Quando ativado pelo Mestre, todos os jogadores são forçados a seguir seus próprios tokens selecionados. Jogadores não podem desativar até o Mestre liberar.",
+  "CFT.Force.kbName": "Alternar Forçar Acompanhamento (Mestre)",
+  "CFT.Force.kbHint": "Somente Mestre: Ctrl+Alt+F",
+  "CFT.Force.enabledGM": "Forçar Acompanhamento ativado — todos os jogadores agora estão bloqueados para seguir.",
+  "CFT.Force.disabledGM": "Forçar Acompanhamento desativado — os jogadores podem controlar novamente.",
+  "CFT.Force.enabledPlayer": "O Mestre bloqueou a câmera. Você não pode desativá-la.",
+  "CFT.Force.disabledPlayer": "O Mestre liberou o bloqueio. Você pode controlar sua câmera novamente.",
+  "CFT.Force.lockedPlayer": "A câmera está bloqueada pelo Mestre.",
+
+  "CFT.Cinematic.name": "Modo Cinemático (somente Mestre)",
+  "CFT.Cinematic.hint": "Todos os clientes focam nos tokens selecionados pelo Mestre. Jogadores não podem mover seus tokens. Tudo é restaurado ao desativar.",
+  "CFT.Cinematic.kbName": "Alternar Modo Cinemático (Mestre)",
+  "CFT.Cinematic.kbHint": "Somente Mestre: Ctrl+F",
+  "CFT.Cinematic.enabledGM": "Modo Cinemático ativado — todos os clientes agora focam em sua seleção.",
+  "CFT.Cinematic.disabledGM": "Modo Cinemático desativado — todos os clientes foram restaurados.",
+  "CFT.Cinematic.enabledPlayer": "Modo Cinemático ativado pelo Mestre. Os controles estão temporariamente bloqueados.",
+  "CFT.Cinematic.disabledPlayer": "Modo Cinemático desativado. Seu estado de câmera anterior foi restaurado.",
+
+  "CFT.Banner.Force": "FORÇAR ACOMPANHAMENTO ATIVO",
+  "CFT.Banner.Cinematic": "MODO CINEMÁTICO ATIVO"
+}

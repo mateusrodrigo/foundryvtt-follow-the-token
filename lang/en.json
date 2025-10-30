@@ -1,0 +1,48 @@
+{
+  "CFT.Enabled.name": "Enable follow camera",
+  "CFT.Enabled.hint": "Keeps your camera smoothly centered on your controlled token(s). Default hotkey: Alt+F (configurable in Keybindings) or use the crosshair icon.",
+
+  "CFT.RetainZoom.name": "Retain zoom level",
+  "CFT.RetainZoom.hint": "If enabled, your current zoom level is preserved while following.",
+
+  "CFT.Scale.name": "Target zoom (if not retaining)",
+  "CFT.Scale.hint": "Only used when 'Retain zoom level' is off.",
+
+  "CFT.Responsiveness.name": "Responsiveness (0.05–0.5)",
+  "CFT.Responsiveness.hint": "How much of the remaining distance the camera moves each frame. 0.5 = snappier, 0.1 = smoother.",
+
+  "CFT.MaxSpeed.name": "Maximum speed (px/s)",
+  "CFT.MaxSpeed.hint": "Optional cap for camera panning speed. 0 = unlimited.",
+
+  "CFT.IdleMs.name": "Idle settle (ms)",
+  "CFT.IdleMs.hint": "Time to wait after tokens stop moving before considering the camera idle.",
+
+  "CFT.ResumeOnRelease.name": "Resume follow after mouse release",
+  "CFT.ResumeOnRelease.hint": "When enabled and idle, after you stop panning with the mouse, the camera recenters on your controlled tokens and resumes following.",
+
+  "CFT.Toggle.name": "Toggle follow camera",
+  "CFT.Toggle.on": "Follow camera enabled",
+  "CFT.Toggle.off": "Follow camera disabled",
+
+  "CFT.Force.name": "Force Follow (GM only)",
+  "CFT.Force.hint": "When enabled by the GM, all players are locked to follow their own selected tokens. Players cannot toggle follow until released.",
+  "CFT.Force.kbName": "Toggle Force Follow (GM)",
+  "CFT.Force.kbHint": "GM-only: Ctrl+Alt+F",
+  "CFT.Force.enabledGM": "Force Follow enabled — all players are now locked to follow.",
+  "CFT.Force.disabledGM": "Force Follow disabled — players can control follow again.",
+  "CFT.Force.enabledPlayer": "The GM has locked camera follow. You cannot disable it.",
+  "CFT.Force.disabledPlayer": "The GM has released the lock. You may control camera follow.",
+  "CFT.Force.lockedPlayer": "Camera follow is locked by the GM.",
+
+  "CFT.Cinematic.name": "Cinematic Lock (GM only)",
+  "CFT.Cinematic.hint": "All clients focus on the GM's selected token(s). Players cannot move their tokens. Restores everyone when disabled.",
+  "CFT.Cinematic.kbName": "Toggle Cinematic Lock (GM)",
+  "CFT.Cinematic.kbHint": "GM-only: Ctrl+F",
+  "CFT.Cinematic.enabledGM": "Cinematic Lock enabled — all clients now follow your selection.",
+  "CFT.Cinematic.disabledGM": "Cinematic Lock disabled — clients restored to prior state.",
+  "CFT.Cinematic.enabledPlayer": "Cinematic mode enabled by the GM. Controls are temporarily restricted.",
+  "CFT.Cinematic.disabledPlayer": "Cinematic mode disabled. Your previous camera state was restored.",
+
+  "CFT.Banner.Force": "FORCE FOLLOW IS ACTIVE",
+  "CFT.Banner.Cinematic": "CINEMATIC LOCK IS ACTIVE"
+}
