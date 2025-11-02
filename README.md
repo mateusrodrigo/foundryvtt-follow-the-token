@@ -1,4 +1,4 @@
-# Follow The Token (v1.0.0)
+# Follow The Token (v1.0.1)
 
 A lightweight and configurable **camera-follow** system for **Foundry VTT (v13.350+)**.  
 Keeps the camera centered on your tokens **only while they move**, with three modes: **Local**, **Force**, and **Cinematic**.

@@ -2,7 +2,7 @@
   "id": "follow-the-token",
   "title": "Follow The Token",
   "description": "Smooth and configurable camera-follow system for Foundry VTT. Includes Local (Alt+F), Force (Ctrl+Alt+F, GM), and Cinematic (Ctrl+F, GM) modes with per-user settings, multi-token smoothing, and flicker-free motion.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
 
   "compatibility": { "minimum": "13", "verified": "13.350" },
@@ -27,7 +27,7 @@
   ],
 
   "manifest": "https://cdn.jsdelivr.net/gh/mateusrodrigo/foundryvtt-follow-the-token@main/module.json",
-  "download": "https://github.com/mateusrodrigo/foundryvtt-follow-the-token/releases/download/v1.0.0/follow-the-token-v1.0.0.zip",
+  "download": "https://github.com/mateusrodrigo/foundryvtt-follow-the-token/releases/download/v1.0.1/follow-the-token-v1.0.1.zip",
 
   "flags": { "showBugReportLink": true }
 }

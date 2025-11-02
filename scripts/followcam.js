@@ -1,6 +1,6 @@
 // ===========================
 // File: scripts/followcam.js  (Foundry v13.350)
-// Version: 1.0.0
+// Version: 1.0.1
 // Module ID: follow-the-token
 // ===========================
 //
@@ -297,50 +297,6 @@ Hooks.once("init", () => {
     },
     precedence: (window.CONST?.KEYBINDING_PRECEDENCE?.NORMAL) ?? 100
   });
-
-  Hooks.on("getSceneControlButtons", (controls) => {
-    const tokenCtl = controls.find(c => c.name === "token");
-    if (!tokenCtl) return;
-
-    tokenCtl.tools.push({
-      name: "cft-toggle",
-      title: game.i18n.localize("CFT.Toggle.name"),
-      icon: (_isCinematicOn() || _isForceOn()) ? "fas fa-lock" : "fas fa-crosshairs",
-      toggle: true,
-      active: _isLocalEnabled() && !_isForceOn() && !_isCinematicOn(),
-      onClick: async (active) => {
-        if (_isCinematicOn() || _isForceOn()) {
-          ui?.notifications?.warn(game.i18n.localize("CFT.Force.lockedPlayer"));
-          try { ui?.controls?.initialize(); ui?.controls?.render(); } catch (_) {}
-          return;
-        }
-        await game.settings.set(MODULE_ID, "enabled", active);
-      },
-      visible: true
-    });
-
-    if (game.user?.isGM) {
-      tokenCtl.tools.push({
-        name: "cft-force",
-        title: game.i18n.localize("CFT.Force.name"),
-        icon: _isForceOn() ? "fas fa-user-lock" : "fas fa-user-unlock",
-        toggle: true,
-        active: _isForceOn(),
-        onClick: async (active) => { await game.settings.set(MODULE_ID, "gmForceFollow", active); },
-        visible: true
-      });
-
-      tokenCtl.tools.push({
-        name: "cft-cinematic",
-        title: game.i18n.localize("CFT.Cinematic.name"),
-        icon: _isCinematicOn() ? "fas fa-film" : "far fa-film",
-        toggle: true,
-        active: _isCinematicOn(),
-        onClick: async (active) => { await game.settings.set(MODULE_ID, "gmCinematic", active); },
-        visible: true
-      });
-    }
-  });
 });
 
 // ---------------------------
@@ -559,14 +515,29 @@ function _stopTicker() {
 // ---------------------------
 // Event wiring
 // ---------------------------
-function _onEnabledChanged(_enabled) {
-  try { ui?.controls?.initialize(); ui?.controls?.render(); } catch (e) {}
+function _onEnabledChanged(enabled) {
+  try { ui?.controls?.render(); } catch (_) {}
   if (!canvas?.ready) return;
-  if (!_isFollowActive()) _stopTicker();
+
+  if (enabled) {
+    // starts following immediately (even if it's already moving)
+    _forceCancelPanButtons();
+    _suppressUntilTs = 0;
+
+    const tokens = _getFollowTokens();
+    const center = _getGroupCenter(tokens);
+    if (center) _setCenter(center.x, center.y, /*instant*/ true);
+
+    _lastMoveTs = _now();
+    _startTicker();
+  } else if (!_isFollowActive()) {
+    _stopTicker();
+  }
 }
 
+
 function _onForceChanged(active) {
-  try { ui?.controls?.initialize(); ui?.controls?.render(); } catch (_) {}
+  try { ui?.controls?.render(); } catch (_) {}
 
   if (active) {
     if (game.user?.isGM) {
@@ -593,9 +564,10 @@ function _onForceChanged(active) {
 }
 
 async function _onCinematicChanged(active) {
-  try { ui?.controls?.initialize(); ui?.controls?.render(); } catch (_) {}
+  try { ui?.controls?.render(); } catch (_) {}
 
   if (active) {
+    // --- Signed in to Cinematic: Save snapshot of current client state ---
     const wt = canvas?.stage?.worldTransform;
     const view = canvas?.app?.renderer?.screen;
     const center = wt && view
@@ -620,25 +592,48 @@ async function _onCinematicChanged(active) {
     if (c) _setCenter(c.x, c.y, /*instant*/ true);
     _lastMoveTs = _now();
     _startTicker();
-  } else {
-    const snap = game.settings.get(MODULE_ID, "cinSnapshot") || null;
-    if (snap) {
-      try { await game.settings.set(MODULE_ID, "enabled", !!snap.enabled); } catch (_) {}
-      const opts = { x: snap.center?.x ?? 0, y: snap.center?.y ?? 0 };
-      if (!snap.scaleWasRetained) opts.scale = Number(snap.scale || 1.0);
-      try { canvas.animatePan({ ...opts, duration: 150 }); } catch (_) {}
-    }
-
-    if (game.user?.isGM) {
-      ui.notifications?.info(game.i18n.localize("CFT.Cinematic.disabledGM"));
-    } else {
-      ui.notifications?.info(game.i18n.localize("CFT.Cinematic.disabledPlayer"));
-    }
-
-    if (!_isFollowActive()) _stopTicker();
+    _renderGMBanners();
+    return;
   }
 
-  // Re-render banners with correct priority (Cinematic overrides Force)
+  // --- Left Cinematic: restore exactly what was before ---
+  const snap = game.settings.get(MODULE_ID, "cinSnapshot") || null;
+  const wasFollowEnabled = !!(snap?.enabled);
+
+  if (game.user?.isGM) {
+    // GM: não fazer rollback de câmera; apenas restaurar o flag enabled como antes
+    await game.settings.set(MODULE_ID, "enabled", wasFollowEnabled);
+    if (wasFollowEnabled) {
+      _lastMoveTs = _now();
+      _startTicker();
+    } else if (!_isFollowActive()) {
+      _stopTicker();
+    }
+  } else {
+    // Player: if you didn't have a follow before, go back to the camera to the snapshot;
+    // if it had, keep it glued to the token (no camera rollback)
+    await game.settings.set(MODULE_ID, "enabled", wasFollowEnabled);
+
+    if (wasFollowEnabled) {
+      const tokens = _getFollowTokens();
+      const center = _getGroupCenter(tokens);
+      if (center) _setCenter(center.x, center.y, /*instant*/ true);
+      _lastMoveTs = _now();
+      _startTicker();
+    } else {
+      const opts = { x: snap?.center?.x ?? 0, y: snap?.center?.y ?? 0 };
+      if (!snap?.scaleWasRetained) opts.scale = Number(snap?.scale || 1.0);
+      try { canvas.animatePan({ ...opts, duration: 150 }); } catch (_) {}
+      if (!_isFollowActive()) _stopTicker();
+    }
+  }
+
+  if (game.user?.isGM) {
+    ui.notifications?.info(game.i18n.localize("CFT.Cinematic.disabledGM"));
+  } else {
+    ui.notifications?.info(game.i18n.localize("CFT.Cinematic.disabledPlayer"));
+  }
+
   _renderGMBanners();
 }
 
