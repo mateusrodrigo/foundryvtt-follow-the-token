@@ -34,8 +34,8 @@ Works seamlessly alongside [Rotate Camera 8D](https://github.com/mateusrodrigo/f
 
 ## Installation
 **Manifest URLs:**  
-- jsDelivr: https://cdn.jsdelivr.net/gh/mateusrodrigo/foundryvtt-follow-the-token@main/module.json  
-- GitHub: https://raw.githubusercontent.com/mateusrodrigo/foundryvtt-follow-the-token/main/module.json  
+- GitHub (Raw): https://raw.githubusercontent.com/mateusrodrigo/foundryvtt-follow-the-token/v1.1.0/module.json
+- jsDelivr: https://cdn.jsdelivr.net/gh/mateusrodrigo/foundryvtt-follow-the-token@v1.1.0/module.json  
 
 1. In Foundry VTT, go to **Add-on Modules → Install Module**  
 2. Paste one of the URLs above and click **Install**  
