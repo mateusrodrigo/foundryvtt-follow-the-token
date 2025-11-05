@@ -1,6 +1,6 @@
 // ===========================
 // File: scripts/followcam.js  (Foundry v13.350)
-// Version: 1.0.1
+// Version: 1.1.0
 // Module ID: follow-the-token
 // ===========================
 //
@@ -33,7 +33,7 @@
 // • responsiveness (default 0.5): 0.05–0.5. Higher = snappier camera; lower = smoother/laggier.
 // • maxSpeed: cap (px/s). 0 = unlimited.
 // • resumeOnRelease (default false): when idle panning stops, camera resumes following after a short grace.
-// • idleMs: idle threshold used to consider movement "stopped" (client setting).
+// • idleMs: idle threshold (default 100ms) used to consider movement "stopped" (client setting).
 // • EMA alpha (internal, 0.25) reduces centroid jitter only when multiple tokens are selected.
 //
 // ===========================
@@ -371,7 +371,7 @@ function _onPointerDownStage(ev) {
 
   if (btn !== 0 && btn !== 1 && btn !== 2) return;
 
-  if (_isMoving()) {
+  if (_isMoving() && (btn === 1 || btn === 2)) {
     _forceCancelPanButtons();
     try { ev.stopPropagation?.(); } catch(_) {}
     try { ev?.data?.originalEvent?.stopImmediatePropagation?.(); } catch(_) {}
@@ -383,6 +383,7 @@ function _onPointerDownStage(ev) {
   _suppressUntilTs = Number.POSITIVE_INFINITY;
   _stopTicker();
 }
+
 
 function _onPointerUpStage(ev) {
   const btn = ev?.data?.button;
@@ -456,12 +457,49 @@ function _setCenter(x, y, instant = false) {
 }
 
 function _currentCenterWorld() {
-  const view = canvas?.app?.renderer?.screen;
-  const wt = canvas?.stage?.worldTransform;
-  if (!view || !wt) return canvas.scene?.dimensions?.center || { x: 0, y: 0 };
-  const cx = (view.width / 2 - wt.tx) / wt.a;
-  const cy = (view.height / 2 - wt.ty) / wt.d;
-  return { x: cx, y: cy };
+  const view = canvas?.app?.renderer?.screen;
+  const interaction = canvas?.app?.renderer?.plugins?.interaction || canvas?.app?.renderer?.plugins?.eventSystem;
+  const stage = canvas?.stage;
+
+  if (!view || !stage) return canvas.scene?.dimensions?.center || { x: 0, y: 0 };
+
+  // 1) Preferred robust method: mapPositionToPoint + toLocal (supports rotation)
+  try {
+    if (interaction && typeof interaction.mapPositionToPoint === "function" && typeof stage.toLocal === "function") {
+      const px = view.width / 2;
+      const py = view.height / 2;
+      const p = new PIXI.Point();
+      interaction.mapPositionToPoint(p, px, py);
+      // ensure transform is updated before toLocal (prevents inconsistencies)
+      if (typeof stage.updateTransform === "function") stage.updateTransform();
+      const worldPoint = stage.toLocal(p);
+      return { x: worldPoint.x, y: worldPoint.y };
+    }
+  } catch (err) {
+    console.warn("[FTT] robust center mapping failed:", err);
+    // fall through to fallback
+  }
+
+  // 2) Mathematical Fallback (explicit inversion of the world matrix)
+  try {
+    const wt = stage.worldTransform;
+    const sx = view.width / 2;
+    const sy = view.height / 2;
+    // point relative to translation
+    const dx = sx - wt.tx;
+    const dy = sy - wt.ty;
+    const a = wt.a, b = wt.b, c = wt.c, d = wt.d;
+    const det = a * d - b * c;
+    // If the determinant is near zero, the matrix is singular (no inverse)
+    if (Math.abs(det) < 1e-8) return canvas.scene?.dimensions?.center || { x: 0, y: 0 };
+    // Apply inverse matrix (PIXI transform matrix inversion formula)
+    const lx = (d * dx - c * dy) / det;
+    const ly = (-b * dx + a * dy) / det;
+    return { x: lx, y: ly };
+  } catch (err) {
+    console.warn("[FTT] center fallback failed:", err);
+    return canvas.scene?.dimensions?.center || { x: 0, y: 0 };
+  }
 }
 
 // ---------------------------
@@ -473,6 +511,11 @@ function _startTicker() {
 
   const step = (ts) => {
     if (!_isFollowActive()) { _stopTicker(); return; }
+
+    if (_isMouseHeld()) {
+      _rafHandle = requestAnimationFrame(step);
+      return;
+    }
 
     if (!_isMoving(ts) && _isSuppressed()) {
       const n = (canvas?.tokens?.controlled ?? []).length;
@@ -688,7 +731,9 @@ Hooks.on("updateToken", (doc, changes) => {
   const startingMovement = _wasIdle(now);
 
   if (startingMovement) {
+    // here we kill ANY pan with RMB/MMB in progress
     _forceCancelPanButtons();
+
     const tokens = _getFollowTokens();
     const center = _getGroupCenter(tokens);
     if (center) _setCenter(center.x, center.y, /*instant*/ true);
@@ -697,6 +742,7 @@ Hooks.on("updateToken", (doc, changes) => {
   _lastMoveTs = now;
   _startTicker();
 });
+
 
 // Stop ticker if selection disappears
 Hooks.on("deleteToken", () => {
