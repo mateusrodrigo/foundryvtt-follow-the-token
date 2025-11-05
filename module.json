@@ -26,7 +26,7 @@
     { "lang": "pt-BR", "name": "Português (Brasil)", "path": "lang/pt-BR.json" }
   ],
 
-  "manifest": "https://cdn.jsdelivr.net/gh/mateusrodrigo/foundryvtt-follow-the-token@main/module.json",
+  "manifest": "https://raw.githubusercontent.com/mateusrodrigo/foundryvtt-follow-the-token/v1.1.0/module.json",
   "download": "https://github.com/mateusrodrigo/foundryvtt-follow-the-token/releases/download/v1.1.0/follow-the-token-v1.1.0.zip",
 
   "flags": { "showBugReportLink": true }
