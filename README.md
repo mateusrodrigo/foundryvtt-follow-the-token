@@ -1,7 +1,7 @@
-# Follow The Token (v1.1.0)
+# Follow The Token (v1.1.1)
 
 ![Foundry Version](https://img.shields.io/badge/Foundry-v13.350%2B-blue)
-![Version](https://img.shields.io/badge/Version-1.1.0-green)
+![Version](https://img.shields.io/badge/Version-1.1.1-green)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
 A lightweight and configurable **camera-follow** system for **Foundry VTT (v13.350+)**.  
@@ -13,7 +13,7 @@ Works seamlessly alongside [Rotate Camera 8D](https://github.com/mateusrodrigo/f
 ## Features
 - **Three modes**
   - **Local Follow (Alt+F):** Each player follows their own selected tokens.
-  - **Force Follow (Ctrl+Alt+F, GM):** Forces Follow to stay ON for all clients.
+  - **Force Follow (Ctrl+Alt+F, GM):** Forces Follow to stay ON for all *players*, while the GM remains free to toggle local follow independently.
   - **Cinematic Lock (Ctrl+F, GM):** All clients focus on the GM’s selected tokens.
 - **Smooth motion**
   - Adjustable responsiveness (0.05–0.5), speed limit, and zoom options.
@@ -34,8 +34,8 @@ Works seamlessly alongside [Rotate Camera 8D](https://github.com/mateusrodrigo/f
 
 ## Installation
 **Manifest URLs:**  
-- GitHub (Raw): https://raw.githubusercontent.com/mateusrodrigo/foundryvtt-follow-the-token/v1.1.0/module.json
-- jsDelivr: https://cdn.jsdelivr.net/gh/mateusrodrigo/foundryvtt-follow-the-token@v1.1.0/module.json  
+- jsDelivr: https://cdn.jsdelivr.net/gh/mateusrodrigo/foundryvtt-follow-the-token@main/module.json  
+- GitHub: https://raw.githubusercontent.com/mateusrodrigo/foundryvtt-follow-the-token/main/module.json  
 
 1. In Foundry VTT, go to **Add-on Modules → Install Module**  
 2. Paste one of the URLs above and click **Install**  

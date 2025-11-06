@@ -1,6 +1,6 @@
 // ===========================
 // File: scripts/followcam.js  (Foundry v13.350)
-// Version: 1.1.0
+// Version: 1.1.1
 // Module ID: follow-the-token
 // ===========================
 //
@@ -12,9 +12,10 @@
 //   - Supports multi-select; camera targets the smoothed centroid of all selected tokens.
 //   - While tokens are moving, RMB/MMB panning is suppressed to avoid conflicts.
 //   - When idle, the user can pan freely; on mouse release the camera can optionally resume following.
-// • Ctrl+Alt+F (GM-only): Force Follow — globally locks "follow ON" for all clients,
+// • Ctrl+Alt+F (GM-only): Force Follow — locks "follow ON" for all PLAYERS,
 //   but each client still follows their own selected tokens (not the GM's).
 //   - Players cannot disable local follow while Force is active.
+//   - The GM is not forced; they keep full control over their own Alt+F toggle.
 //   - GM sees a small on-screen banner.
 // • Ctrl+F (GM-only): Cinematic Lock — hard override for full GM control.
 //   - All clients (players and GM) focus on the GM’s selected token(s).
@@ -76,10 +77,21 @@ const _wasIdle = (now = _now()) => (now - _lastMoveTs) > _idleMs();
 const _isMoving = (now = _now()) => !_wasIdle(now);
 const _isMouseHeld = () => _buttonsHeld.size > 0;
 
-const _isForceOn = () => Boolean(game.settings.get(MODULE_ID, "gmForceFollow"));
+const _isForceOnGlobal = () => Boolean(game.settings.get(MODULE_ID, "gmForceFollow"));
+const _isForceOnForMe = () => _isForceOnGlobal() && !game.user?.isGM;
+
+const _isForceOn = _isForceOnGlobal; // alias for old code to keep working
+
 const _isCinematicOn = () => Boolean(game.settings.get(MODULE_ID, "gmCinematic"));
 const _isLocalEnabled = () => Boolean(game.settings.get(MODULE_ID, "enabled"));
-const _isFollowActive = () => _isCinematicOn() || _isForceOn() || _isLocalEnabled();
+
+/** 
+ * For players: 
+ * Active if: Cinematic OR ForceFollow OR Local On. 
+ * For GM: 
+ * Active if: Cinematic OR Local On (ForceFollow does not force the GM). 
+*/
+const _isFollowActive = () => _isCinematicOn() || _isForceOnForMe() || _isLocalEnabled();
 
 const _getGMSelectionIds = () => game.settings.get(MODULE_ID, "gmSelectionIds") || [];
 
@@ -257,14 +269,22 @@ Hooks.once("init", () => {
     hint: game.i18n.localize("CFT.Toggle.name"),
     editable: [{ key: "KeyF", modifiers: ["Alt"] }],
     onDown: () => {
-      if (_isCinematicOn() || _isForceOn()) {
+      // Cinematic sempre bloqueia todo mundo (GM incluso)
+      if (_isCinematicOn()) {
         ui?.notifications?.warn(game.i18n.localize("CFT.Force.lockedPlayer"));
         return true;
       }
+
+      // Force Follow só bloqueia jogadores; GM continua livre para ligar/desligar Alt+F
+      if (_isForceOnForMe()) {
+        ui?.notifications?.warn(game.i18n.localize("CFT.Force.lockedPlayer"));
+        return true;
+      }
+
       const v = !_isLocalEnabled();
       game.settings.set(MODULE_ID, "enabled", v);
       ui.notifications?.info(v ? game.i18n.localize("CFT.Toggle.on")
-                               : game.i18n.localize("CFT.Toggle.off"));
+                              : game.i18n.localize("CFT.Toggle.off"));
       return true;
     },
     precedence: (window.CONST?.KEYBINDING_PRECEDENCE?.NORMAL) ?? 100
@@ -578,31 +598,43 @@ function _onEnabledChanged(enabled) {
   }
 }
 
-
 function _onForceChanged(active) {
   try { ui?.controls?.render(); } catch (_) {}
 
   if (active) {
     if (game.user?.isGM) {
+      // GM turns on the Force: he is not forced to follow, he just gains the banner and control.
       ui.notifications?.info(game.i18n.localize("CFT.Force.enabledGM"));
-    } else {
-      ui.notifications?.warn(game.i18n.localize("CFT.Force.enabledPlayer"));
-    }
 
-    const center = _getGroupCenter(_getFollowTokens());
-    if (center) _setCenter(center.x, center.y, /*instant*/ true);
-    _lastMoveTs = _now();
-    _startTicker();
+      // If the GM already had local follow on, we maintain normal behavior.
+      if (_isLocalEnabled()) {
+        const center = _getGroupCenter(_getFollowTokens());
+        if (center) _setCenter(center.x, center.y, /*instant*/ true);
+        _lastMoveTs = _now();
+        _startTicker();
+      }
+    } else {
+      // Players: Forced their own tokens (as before)
+      ui.notifications?.warn(game.i18n.localize("CFT.Force.enabledPlayer"));
+
+      const center = _getGroupCenter(_getFollowTokens());
+      if (center) _setCenter(center.x, center.y, /*instant*/ true);
+      _lastMoveTs = _now();
+      _startTicker();
+    }
   } else {
     if (game.user?.isGM) {
       ui.notifications?.info(game.i18n.localize("CFT.Force.disabledGM"));
     } else {
       ui.notifications?.info(game.i18n.localize("CFT.Force.disabledPlayer"));
     }
+
+    // For player: when Force hangs up, it only continues with ticker if it has local or cinematic follow.
+    // For GM: Force never counted for _isFollowActive even.
     if (!_isFollowActive()) _stopTicker();
   }
 
-  // Re-render banners with correct priority (Force vs Cinematic)
+  // Re-render banners com prioridade correta (Force vs Cinematic)
   _renderGMBanners();
 }
 
