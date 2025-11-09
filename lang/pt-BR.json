@@ -2,6 +2,9 @@
   "CFT.Enabled.name": "Ativar câmera de acompanhamento",
   "CFT.Enabled.hint": "Mantém sua câmera suavemente centralizada em seus tokens controlados. Atalho padrão: Alt+F (configurável em Atalhos) ou use o ícone de mira.",
 
+  "CFT.CinematicCamera.name": "Cinematic segue a câmera do Mestre",
+  "CFT.CinematicCamera.hint": "Se ativado, o modo Cinemático espelha a câmera do Mestre (movimento, zoom e rotação) em vez de seguir os tokens selecionados.",
+
   "CFT.RetainZoom.name": "Manter nível de zoom",
   "CFT.RetainZoom.hint": "Se ativado, o nível de zoom atual será preservado durante o acompanhamento.",
 
@@ -30,19 +33,32 @@
   "CFT.Force.kbHint": "Somente Mestre: Ctrl+Alt+F",
   "CFT.Force.enabledGM": "Forçar Acompanhamento ativado — todos os jogadores agora estão bloqueados para seguir.",
   "CFT.Force.disabledGM": "Forçar Acompanhamento desativado — os jogadores podem controlar novamente.",
-  "CFT.Force.enabledPlayer": "O Mestre bloqueou a câmera. Você não pode desativá-la.",
+  "CFT.Force.enabledPlayer": "O Mestre bloqueou o acompanhamento da câmera. Você não pode desativá-lo.",
   "CFT.Force.disabledPlayer": "O Mestre liberou o bloqueio. Você pode controlar sua câmera novamente.",
-  "CFT.Force.lockedPlayer": "A câmera está bloqueada pelo Mestre.",
+  "CFT.Force.lockedPlayer": "O acompanhamento da câmera está bloqueado pelo Mestre.",
 
   "CFT.Cinematic.name": "Modo Cinemático (somente Mestre)",
   "CFT.Cinematic.hint": "Todos os clientes focam nos tokens selecionados pelo Mestre. Jogadores não podem mover seus tokens. Tudo é restaurado ao desativar.",
   "CFT.Cinematic.kbName": "Alternar Modo Cinemático (Mestre)",
   "CFT.Cinematic.kbHint": "Somente Mestre: Ctrl+F",
-  "CFT.Cinematic.enabledGM": "Modo Cinemático ativado — todos os clientes agora focam em sua seleção.",
-  "CFT.Cinematic.disabledGM": "Modo Cinemático desativado — todos os clientes foram restaurados.",
-  "CFT.Cinematic.enabledPlayer": "Modo Cinemático ativado pelo Mestre. Os controles estão temporariamente bloqueados.",
-  "CFT.Cinematic.disabledPlayer": "Modo Cinemático desativado. Seu estado de câmera anterior foi restaurado.",
+  "CFT.Cinematic.enabledGM": "Modo Cinemático ativado — todos os clientes agora estão focando sua visão.",
+  "CFT.Cinematic.disabledGM": "Modo Cinemático desativado — todos os clientes foram restaurados ao estado anterior.",
+  "CFT.Cinematic.enabledPlayer": "Modo Cinemático ativado pelo Mestre. Seus controles estão temporariamente restritos.",
+  "CFT.Cinematic.disabledPlayer": "Modo Cinemático desativado. Sua visão anterior foi restaurada.",
+
+  "CFT.Cinematic.reminderForcePlayer": "O Modo Cinemático foi encerrado, mas o Mestre ainda mantém o Forçar Acompanhamento ativo.",
+  "CFT.Cinematic.reminderForceGM": "Modo Cinemático desativado. O Forçar Acompanhamento continua ativo para os jogadores.",
+
+  "CFT.Cinematic.modeClassic": "Modo Clássico (seguindo tokens)",
+  "CFT.Cinematic.modeCamera": "Modo Câmera (seguindo a câmera do Mestre)",
+
+  "CFT.Cinematic.infoGM": "Você está no modo Cinemático (seguindo tokens selecionados). A visão e o zoom dos jogadores estão sincronizados com a sua câmera.",
+  "CFT.Cinematic.infoGMcamera": "Você está no modo Cinemático (seguindo sua câmera). Os jogadores veem exatamente o que você vê.",
 
   "CFT.Banner.Force": "FORÇAR ACOMPANHAMENTO ATIVO",
-  "CFT.Banner.Cinematic": "MODO CINEMÁTICO ATIVO"
+  "CFT.Banner.Cinematic": "MODO CINEMÁTICO ATIVO",
+
+  "CFT.Color.Follow": "Azul",
+  "CFT.Color.Force": "Amarelo",
+  "CFT.Color.Cinematic": "Vermelho"
 }
