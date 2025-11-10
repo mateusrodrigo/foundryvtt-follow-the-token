@@ -1378,7 +1378,7 @@ Hooks.on("deleteToken", () => {
 });
 
 // Integration with rotate-camera-8d: keep GM camera rotation synced in Cinematic
-Hooks.on("rotatingCamera.rotated", async () => {
+Hooks.on("rotateCamera8dRotated", async () => {
   if (!_isCinematicOn()) return;
 
   if (game.user?.isGM) {
